@@ -1,0 +1,66 @@
+name: 📰 Generate Changelog
+description: Generates a changelog from commits
+
+inputs:
+  handlebars-setup:
+    description: Handlebars setup file for custom helpers when using a custom changelog template
+    required: true
+    default: handlebars.js
+  issue-pattern:
+    description: Regex pattern to detect issues within commit messages
+    required: true
+    default: '^[A-Za-z]+-\\d+'
+  issue-url:
+    description: URL to the issue system, e.g. https://jira.atlassian.net/browse/{id}
+    required: true
+    default: ''
+  replace-text:
+    description: Collection of Regex pattern and strings to replace matches with
+    required: true
+    default: ''
+  tag-pattern:
+    description: Regex pattern to detect a release tag
+    required: true
+    default: '^v?\\d+\\.\\d+\\.\\d+$'
+  template:
+    description: A custom handlebar template to use for the changelog
+    required: true
+    default: changelog.hbs
+  unreleased:
+    description: Determines if the changelog should contain an unreleased section
+    required: true
+    default: 'true'
+
+runs:
+  using: composite
+  steps:
+    - name: "🪛 Setup Node"
+      id: setup-node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: 🖊️ Create Config
+      id: create-config
+      uses: jsdaniell/create-json@v1.2.3
+      with:
+        name: "package.json"
+        json: >
+          {
+            "auto-changelog": {
+              "handlebarsSetup": "${{ inputs.handlebars-setup }}",
+              "issuePattern": "${{ inputs.issue-pattern }}",
+              "issueUrl": "${{ inputs.issue-url }}",
+              "replaceText": ${{ inputs.replace-text }},
+              "tagPattern": "${{ inputs.tag-pattern }}",
+              "template": "${{ inputs.template }}",
+              "unreleased": ${{ inputs.unreleased }}
+            }
+          }
+
+    - name: 📰 Generate Changelog
+      id: generate-changelog
+      shell: sh
+      run: |
+        npm install --location=global auto-changelog
+        npx auto-changelog
