@@ -2,10 +2,6 @@ name: 📰 Generate Changelog
 description: Generates a changelog from commits
 
 inputs:
-  handlebars-setup:
-    description: Handlebars setup file for custom helpers when using a custom changelog template
-    required: true
-    default: handlebars.js
   issue-pattern:
     description: Regex pattern to detect issues within commit messages
     required: true
@@ -22,10 +18,6 @@ inputs:
     description: Regex pattern to detect a release tag
     required: true
     default: '^v?\\d+\\.\\d+\\.\\d+$'
-  template:
-    description: A custom handlebar template to use for the changelog
-    required: true
-    default: changelog.hbs
   unreleased:
     description: Determines if the changelog should contain an unreleased section
     required: true
@@ -48,12 +40,12 @@ runs:
         json: >
           {
             "auto-changelog": {
-              "handlebarsSetup": "${{ inputs.handlebars-setup }}",
+              "handlebarsSetup": "${{ github.action_path }}/handlebars.js",
               "issuePattern": "${{ inputs.issue-pattern }}",
               "issueUrl": "${{ inputs.issue-url }}",
               "replaceText": ${{ inputs.replace-text }},
               "tagPattern": "${{ inputs.tag-pattern }}",
-              "template": "${{ inputs.template }}",
+              "template": "${{ github.action_path }}/changelog.hbs",
               "unreleased": ${{ inputs.unreleased }}
             }
           }

@@ -20,8 +20,11 @@ jobs:
     runs-on: ubuntu-latest
     name: 📰 Generate Changelog
     steps:
-      - uses: actions/checkout@v4
-      - id: changelog-generator
+      - name: 🛎️ Checkout
+        uses: actions/checkout@v4
+
+      - name: 📝 Changelog Generator
+        id: changelog-generator
         uses: hendric-dev/changelog-generator@v1
         with:
           replace-text: >
